@@ -1,0 +1,12 @@
+@charset "utf8";
+@import "~normalize.css";
+
+body {
+    color: #C0C0C0;
+    background: #404040;
+}
+
+select {
+    color: #C0C0C0;
+    background: rgba(32, 32, 32, 0.75);
+}
