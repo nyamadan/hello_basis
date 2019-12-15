@@ -18,9 +18,8 @@ const COMPRESSED_RGBA8_ETC2_EAC = 0x9278;
 const COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;
 const COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02;
 
-const VertexShaderSource = `#version 300 es
-
-in vec3 position;
+const VertexShaderSource = `
+attribute vec3 position;
 
 void main()
 {
@@ -28,8 +27,7 @@ void main()
 }
 `;
 
-const FragmentShaderSource = `#version 300 es
-
+const FragmentShaderSource = `
 #ifdef GL_ES
 precision mediump float;
 #endif
@@ -37,13 +35,11 @@ precision mediump float;
 uniform vec2 resolution;
 uniform sampler2D tex;
 
-out vec4 fragColor;
-
 void main()
 {
   vec2 p = gl_FragCoord.xy / resolution;
-  vec4 color = texture(tex, p);
-  fragColor = color;
+  vec4 color = texture2D(tex, p);
+  gl_FragColor = color;
 }
 `;
 
@@ -86,7 +82,7 @@ height: 28px;
 
 export class BasisImage extends React.Component<Props, State> {
   private el: HTMLCanvasElement = null;
-  private gl: WebGL2RenderingContext = null;
+  private gl: WebGLRenderingContext = null;
 
   private astcSupported = false;
   private etc1Supported = false;
@@ -119,6 +115,7 @@ export class BasisImage extends React.Component<Props, State> {
     const dest: TextureFormatParam[] = [];
 
     dest.push(this.getTextureFormatParam(BASIS_FORMAT.RGBA32));
+
     dest.push(this.getTextureFormatParam(BASIS_FORMAT.RGB565));
 
     if (astcSupported) {
@@ -240,7 +237,7 @@ export class BasisImage extends React.Component<Props, State> {
   }
 
   public componentDidMount(): void {
-    const gl = this.gl = this.el.getContext("webgl2") as WebGL2RenderingContext;
+    const gl = this.gl = (this.el.getContext("webgl2") || this.el.getContext("webgl")) as WebGLRenderingContext;
 
     this.astcSupported = !!gl.getExtension("WEBGL_compressed_texture_astc");
     this.etc1Supported = !!gl.getExtension("WEBGL_compressed_texture_etc1");
